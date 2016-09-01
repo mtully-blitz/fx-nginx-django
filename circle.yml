@@ -1,0 +1,34 @@
+# The following are required to setup in the Circle's UI:
+#
+# Environment Variables:
+# DOCKER_USER: username for hub.docker.com
+# DOCKER_PASS: password for hub.docker.com
+# DOCKER_EMAIL: email address for hub.docker.com
+#
+
+machine:
+  pre:
+    - sudo curl -L -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.1-circleci'
+    - sudo chmod 0755 /usr/bin/docker
+  services:
+    - docker
+
+checkout:
+  post:
+    - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+
+dependencies:
+  override:
+    - docker build -t blitzagency/nginx-django .
+
+test:
+  override:
+    - docker run blitzagency/nginx-django true
+
+deployment:
+  master:
+    branch: master
+    commands:
+      - docker tag blitzagency/nginx-django blitzagency/nginx-django:$(git rev-parse HEAD | cut -c 1-8)
+      - docker push blitzagency/nginx-django:$(git rev-parse HEAD | cut -c 1-8)
+      - docker push blitzagency/nginx-django:latest
