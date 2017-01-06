@@ -3,7 +3,7 @@ GIT_SHA := $(shell git rev-parse HEAD | cut -c 1-8)
 
 docker-fx:
 	docker build -t fxnetworks/fx-cms-nginx-django:$(GIT_SHA) .
-	docker tag -f fxnetworks/fx-cms-nginx-django:$(GIT_SHA) fxnetworks/fx-cms-nginx-django:latest
+	docker tag fxnetworks/fx-cms-nginx-django:$(GIT_SHA) fxnetworks/fx-cms-nginx-django:latest
 	docker push fxnetworks/fx-cms-nginx-django:latest
 
 docker-blitz:
